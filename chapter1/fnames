@@ -1,0 +1,24 @@
+///////////////////////////////
+// Operagx specific
+///////////////////////////////
+
+// # = constant
+// * = readonly
+// & = obsolete
+
+gxc_start_movie_recording(width,height,fps,record_audio)
+gxc_stop_movie_recording(filename)
+gxc_pause_movie_recording()
+gxc_resume_movie_recording()
+
+
+
+gxc_record_input_playback(devices)
+gxc_save_input_playback(filename)
+gxc_input_playback(filename)
+
+
+gxc_input_record_mouse#
+gxc_input_record_touch#
+gxc_input_record_keyboard#
+gxc_input_record_gamepad#
