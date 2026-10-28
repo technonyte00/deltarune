@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en-us">
+   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PXHK7Q7G3Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PXHK7Q7G3Z');
+</script>
+<head>
+    <body oncontextmenu="return false;">
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>GM RUNNER</title>
+    <style>@-webkit-keyframes rotation {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@-moz-keyframes rotation {
+    from {
+        -moz-transform: rotate(0deg);
+    }
+
+    to {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-o-keyframes rotation {
+    from {
+        -o-transform: rotate(0deg);
+    }
+
+    to {
+        -o-transform: rotate(360deg);
+    }
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    font-family: "Lucida Console", Monaco, monospace;
+
+    color: white;
+
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas.emscripten {
+    display: block;
+    background-color: black;
+    position: absolute;
+    transition: opacity 5s ease-in;
+    -webkit-transition: opacity 5s ease-in;
+    opacity: 0;
+    filter: blur(0) grayscale(0);
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -o-crisp-edges;
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    margin: auto;
+}
+
+canvas.active {
+    animation-name: fadeIn;
+    animation-duration: 2s;
+    opacity: 1;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes blur {
+    0% {
+        filter: blur(0) grayscale(0);
+    }
+
+    100% {
+        filter: blur(2px) grayscale(1);
+    }
+}
+
+.spinner {
+    height: 30px;
+    width: 30px;
+    -webkit-animation: rotation 0.8s linear infinite;
+    -moz-animation: rotation 0.8s linear infinite;
+    -o-animation: rotation 0.8s linear infinite;
+    animation: rotation 0.8s linear infinite;
+    border: 5px solid #bdff00;
+    border-top: 5px solid #719900;
+    border-radius: 100%;
+}
+
+#status {
+    display: inline-block;
+    vertical-align: top;
+    font-weight: bold;
+    color: white;
+}
+
+#progress {
+    width: 250px;
+    height: 10px;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 5px;
+}
+
+progress[value]::-webkit-progress-bar {
+    background-color: #8492a6;
+    height: 10px;
+    border-radius: 15px;
+}
+
+progress[value]::-webkit-progress-value {
+    background-image: -webkit-linear-gradient(left, #719900, #bdff00);
+    height: 10px;
+    border-radius: 15px;
+}
+
+.output-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    z-index: 999;
+    transition: transform 0.3s ease;
+    transform: translateY(100%);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.output-container.visible {
+    transform: translateY(0);
+}
+
+.output-button {
+    margin: 5px;
+    padding: 8px 15px;
+    width: auto;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    outline-color: #20c20e;
+    outline-style: dashed;
+    font-family: "Lucida Console", Monaco, monospace;
+}
+
+#output {
+    display: none;
+    height: 200px;
+    background-color: black;
+    color: white;
+    font-family: "Lucida Console", Monaco, monospace;
+    outline: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+}
+
+#message-container {
+    display: none;
+    min-height: 50px;
+    background-color: rgba(20, 20, 20, 0.5);
+    outline: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+    position: absolute;
+    top: 0;
+}
+
+#messages {
+    margin-left: 50px;
+    color: white;
+    font-family: "Lucida Console", Monaco, monospace;
+    outline: none;
+    border: none;
+    padding: 0;
+}
+
+#closeUIButton {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    display: none;
+    font-size: 35px;
+}
+
+.hidden-ui {
+    display: none !important;
+}
+
+.save-manager-modal {
+    display: none;
+
+    position: fixed;
+
+    z-index: 1001;
+
+    left: 0;
+    top: 0;
+    width: 100%;
+
+    height: 100%;
+
+    overflow: auto;
+
+    background-color: rgba(0, 0, 0, 0.8);
+
+    justify-content: center;
+    align-items: center;
+}
+
+.save-manager-content {
+    background-color: #1a1a1a;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+
+    max-width: 800px;
+
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: white;
+    text-decoration: none;
+}
+
+.minimize-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 11px;
+    right: 46px;
+    cursor: pointer;
+}
+
+.minimize-button:hover,
+.minimize-button:focus {
+    color: white;
+    text-decoration: none;
+}
+
+.save-file-list {
+    max-height: 400px;
+
+    overflow-y: auto;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #0d0d0d;
+}
+
+.save-file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #222;
+}
+
+.save-file-item:last-child {
+    border-bottom: none;
+}
+
+.save-file-info {
+    flex-grow: 1;
+}
+
+.save-file-info span {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.save-file-actions button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #20c20e;
+    color: black;
+    font-weight: bold;
+}
+
+.save-file-actions button.delete-btn {
+    background-color: #FA1E4E;
+}
+
+.file-upload-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #333;
+}
+
+.file-upload-section input[type="file"] {
+    background-color: #0d0d0d;
+    border: 1px solid #333;
+    padding: 8px;
+    border-radius: 5px;
+    color: white;
+}
+
+.file-upload-section input[type="text"] {
+    background-color: #0d0d0d;
+    border: 1px solid #333;
+    padding: 8px;
+    border-radius: 5px;
+    color: white;
+}
+
+.file-upload-section button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.custom-message-box {
+    display: none;
+
+    position: fixed;
+
+    z-index: 1002;
+
+    left: 0;
+    top: 0;
+    width: 100%;
+
+    height: 100%;
+
+    overflow: auto;
+
+    background-color: rgba(0, 0, 0, 0.6);
+
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-message-box-content {
+    background-color: #1a1a1a;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+
+    max-width: 400px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.custom-message-box-content button {
+    background-color: #20c20e;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+#mobile-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+
+    pointer-events: none;
+    z-index: 100;
+}
+
+#joystick-zone {
+    position: absolute;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+#button-zone {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 20px;
+
+    pointer-events: auto;
+}
+
+.action-button {
+
+    width: clamp(45px, 12vw, 80px);
+    height: clamp(45px, 12vw, 80px);
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: auto;
+
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.1s ease, transform 0.1s ease;
+    opacity: 0.7;
+
+}
+
+.action-button.pressed {
+    opacity: 1.0;
+
+    transform: scale(0.95);
+
+}
+
+.nipple {
+    opacity: 0.7;
+}
+
+.nipple.front {
+    background-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.nipple.back {
+    background-color: rgba(128, 128, 128, 0.5) !important;
+}
+</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <style>
+            #loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                display: flex;
+                flex-direction: column;
+                justify-content: center; /* Vertically centers content */
+                align-items: center;     /* Horizontally centers content */
+                z-index: 9999;
+                color: white;
+                font-family: monospace;
+            }
+
+            .spinner {
+                border: 8px solid #f3f3f3;
+                border-top: 8px solid #3498db;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin-bottom: 20px;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            #loading-log {
+                text-align: center;
+            }
+            
+            .loading {
+                visibility: hidden;
+            }
+        </style>
+</head>
+
+<body>
+    <div id="loading-overlay">
+        <div class="spinner" id="spinner"></div>
+        <div id="loading-log"></div>
+    </div>
+    <div id="game-container">
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+        <div class="loading">
+            <div class="emscripten" id="status"></div>
+            <progress value="0" max="100" id="progress" hidden="0"></progress>
+        </div>
+        <div id="mobile-controls">
+            <div id="joystick-zone"></div>
+            <div id="button-zone">
+                <img class="action-button" id="button-c" alt="C Button">
+                <img class="action-button" id="button-x" alt="X Button">
+                <img class="action-button" id="button-z" alt="Z Button">
+            </div>
+        </div>
+        <div class="output-container" id="output-container">
+            <button class="output-button" id="fullscreen" title="Toggle Fullscreen">Toggle Fullscreen?</button>
+            <button class="output-button" onclick="toggleConsole()" title="Lists emscripten/GM console output and loading progress">Toggle Console!</button>
+            <button class="output-button" id="stats-button" onclick="toggleFPS()" title="Toggles the external FPS Counter">Toggle FPS Counter!</button>
+            <button class="output-button" onclick="window.DeltaruneSaveManager.openSaveManager()" title="Manage your DELTARUNE save files">Save Manager!</button>
+            <button class="output-button" onclick="toggleWASD()" title="Toggles Mirroring Arrow Keys to WASD for easier control">Toggle Arrow & WASD Controls!</button>
+            <input id="colorpicker" type="color" onchange="changecolor(this)" title="Changes Color of the Website's Background">
+            <textarea id="output"></textarea>
+        </div>
+        <button id="closeUIButton" onclick="hideUI()">&times;</button>
+        <div id="message-container">
+            <div id="messages"></div>
+        </div>
+    </div>
+
+    <div id="customMessageBox" class="custom-message-box">
+        <div class="custom-message-box-content">
+            <p id="messageBoxText"></p>
+            <button id="messageBoxConfirmBtn">OK</button>
+        </div>
+    </div>
+
+    <div id="saveManagerModal" class="save-manager-modal">
+        <div class="save-manager-content">
+            <span class="close-button" onclick="window.DeltaruneSaveManager.closeSaveManager()">&times;</span>
+            <div class="save-manager-content2">
+                <span class="minimize-button" onclick="window.DeltaruneSaveManager.closeSMnoreload()">&dash;</span>
+                <h2>Save File Manager!</h2>
+                <button class="output-button" onclick="toggleclear_site_cache()">Wipe all of your saves?</button>
+                <button id="exportAllBtn" class="output-button" onclick="DeltaruneSaveManager.exportAllToZip()">Export all saves to ZIP?</button>
+                <h3>Current Save Files:</h3>
+                <div id="saveFileList" class="save-file-list">
+                    <p style="text-align: center; color: #888;">No saves found. Try importing one or saving in-game first.</p>
+                </div>
+                <div class="file-upload-section">
+                    <h3>Import Save Files?</h3>
+                    <input type="file" id="uploadFileInput" accept="*" multiple>
+                        <input type="text" id="uploadFileNameInput" placeholder="Enter the corresponding filename (e.g., filech1_0, dr.ini / for single file only)">
+                            <button onclick="DeltaruneSaveManager.handleUpload()">Select File(s)!</button>
+                        </div>
+            </div>
+        </div>
+        <script>
+            (function(window) {
+                const WASD_CONTROLLER = {
+                    isEnabled: false,
+                    boundHandler: null,
+                    
+                    eventTarget: document.body,
+                    
+                    keyMap: {
+                        'w': {
+                            key: 'ArrowUp',
+                            code: 'ArrowUp',
+                            keyCode: 38
+                        },
+                        'a': {
+                            key: 'ArrowLeft',
+                            code: 'ArrowLeft',
+                            keyCode: 37
+                        },
+                        's': {
+                            key: 'ArrowDown',
+                            code: 'ArrowDown',
+                            keyCode: 40
+                        },
+                        'd': {
+                            key: 'ArrowRight',
+                            code: 'ArrowRight',
+                            keyCode: 39
+                        },
+                        'W': {
+                            key: 'ArrowUp',
+                            code: 'ArrowUp',
+                            keyCode: 38
+                        },
+                        'A': {
+                            key: 'ArrowLeft',
+                            code: 'ArrowLeft',
+                            keyCode: 37
+                        },
+                        'S': {
+                            key: 'ArrowDown',
+                            code: 'ArrowDown',
+                            keyCode: 40
+                        },
+                        'D': {
+                            key: 'ArrowRight',
+                            code: 'ArrowRight',
+                            keyCode: 39
+                        }
+                    },
+                    
+                    handleKeyEvent: function(event) {
+                        if (!this.isEnabled) return;
+                        
+                        const targetNode = event.target.nodeName.toLowerCase();
+                        if (targetNode === 'input' || targetNode === 'textarea' || event.target.isContentEditable) {
+                            return;
+                        }
+                        
+                        const keyData = this.keyMap[event.key];
+                        
+                        if (keyData) {
+                            
+                            event.preventDefault();
+                            event.stopPropagation();
+                            
+                            const arrowKeyEvent = new KeyboardEvent(event.type, {
+                                key: keyData.key,
+                                code: keyData.code,
+                                bubbles: true,
+                                cancelable: true,
+                                composed: true,
+                            });
+                            
+                            Object.defineProperty(arrowKeyEvent, 'keyCode', {
+                                value: keyData.keyCode,
+                                writable: false
+                            });
+                            Object.defineProperty(arrowKeyEvent, 'which', {
+                                value: keyData.keyCode,
+                                writable: false
+                            });
+                            
+                            this.eventTarget.dispatchEvent(arrowKeyEvent);
+                        }
+                    },
+                    
+                    enable: function() {
+                        if (this.isEnabled) return;
+                        this.boundHandler = this.boundHandler || this.handleKeyEvent.bind(this);
+                        
+                        document.addEventListener('keydown', this.boundHandler, true);
+                        document.addEventListener('keyup', this.boundHandler, true);
+                        this.isEnabled = true;
+                        console.log('WASD -> arrow key control has been ENABLED! Target:', this.eventTarget);
+                    },
+                    
+                    disable: function() {
+                        if (!this.isEnabled || !this.boundHandler) return;
+                        document.removeEventListener('keydown', this.boundHandler, true);
+                        document.removeEventListener('keyup', this.boundHandler, true);
+                        this.isEnabled = false;
+                        console.log('WASD -> arrow key control has been DISABLED!');
+                    },
+                    
+                    toggle: function() {
+                        if (this.isEnabled) {
+                            this.disable();
+                        } else {
+                            this.enable();
+                        }
+                    }
+                };
+                
+                window.toggleWASD = WASD_CONTROLLER.toggle.bind(WASD_CONTROLLER);
+                
+            })(window);
+        </script>
+        <script>
+            const konamiCode = ['p', 'i', 'e'];
+            let konamiIndex = 0;
+            
+            function hideUI() {
+                document.getElementById('output-container').classList.remove('visible');
+                document.getElementById('message-container').classList.add('hidden-ui');
+                document.getElementById('closeUIButton').style.display = 'none';
+            }
+            
+            function showUI() {
+                document.getElementById('output-container').classList.add('visible');
+                document.getElementById('message-container').classList.remove('hidden-ui');
+                document.getElementById('closeUIButton').style.display = 'block';
+                ensureAspectRatio();
+            }
+            document.addEventListener('keydown', (e) => {
+                if (e.key === konamiCode[konamiIndex]) {
+                    konamiIndex++;
+                    if (konamiIndex === konamiCode.length) {
+                        showUI();
+                        konamiIndex = 0;
+                    }
+                } else {
+                    konamiIndex = 0;
+                }
+            });
+            window.addEventListener('load', () => {
+                document.getElementById('output-container').classList.remove('visible');
+                document.querySelector('.loading').classList.add('hidden-ui');
+                document.getElementById('message-container').classList.add('hidden-ui');
+                document.getElementById('closeUIButton').style.display = 'none';
+            });
+        </script>
+        
+        <script type="text/javascript">
+            function changecolor(el) {
+                document.body.style.backgroundColor = el.value;
+            }
+            const CHANGE_ASPECT_RATIO = true;
+            var bodyElement = document.getElementsByTagName("body")[0];
+            var statusElement = document.getElementById("status");
+            var progressElement = document.getElementById("progress");
+            var spinnerElement = document.getElementById("spinner");
+            var canvasElement = document.getElementById("canvas");
+            var outputElement = document.getElementById("output");
+            var outputContainerElement = document.getElementById("output-container");
+            const messageContainerElement = document.getElementById("message-container");
+            const messagesElement = document.getElementById("messages");
+            let rollbackMessages = [];
+            const CONSOLE_layer_set_visible = "layer_set_visible() - could not find specified layer in current room";
+            const CONSOLE_layer_tilemap_get_id = "layer_tilemap_get_id() - specified tilemap not found";
+            const CONSOLE_layer_depth = "layer_depth() - can't find specified layer";
+            const CONSOLE_draw_tilemap = "draw_tilemap() - couldn't find specified tilemap";
+            const CONSOLE_layer_get_all_elements = "layer_get_all_elements() - can't find specified layer";
+            let clearRollbackMessagesTimeoutId = -1;
+            const showRollbackMessage = function(message) {
+                let messages = "";
+                rollbackMessages.push(message);
+                rollbackMessages.forEach(m => messages += " < p > " + m + " < /p>");
+                messagesElement.innerHTML = messages;
+                messageContainerElement.style.display = 'block';
+                if (clearRollbackMessagesTimeoutId === -1) {
+                    clearTimeout(clearRollbackMessagesTimeoutId);
+                }
+                clearRollbackMessagesTimeoutId = setTimeout(clearRollbackMessages, 5000);
+            };
+            const clearRollbackMessages = function() {
+                clearRollbackMessagesTimeoutId = -1;
+                rollbackMessages = [];
+                messageContainerElement.style.display = 'none';
+            };
+            var loadprogress = 0;
+            var startingHeight, startingWidth;
+            var startingAspect;
+            var Module = {
+                preRun: [],
+                postRun: [],
+                print: (function() {
+                    var element = document.getElementById("output");
+                    if (element) element.value = "";
+                    return function(text) {
+                        if (text === "Starting WAD") {
+                            loadprogress += 1;
+                        }
+                        if (loadprogress === 1) {
+                            Module.setStatus(text);
+                        } else if (loadprogress >= 2) {
+                            Module.setStatus("");
+                        }
+                        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(" ");
+                        if (text != CONSOLE_layer_set_visible && text != CONSOLE_layer_tilemap_get_id && text != CONSOLE_layer_depth && text != CONSOLE_draw_tilemap && text != CONSOLE_layer_get_all_elements) {
+                            console.log(text);
+                        }
+                        if (text === "Entering main loop.") {
+                            ensureAspectRatio();
+                            loadprogress += 1;
+                        }
+                        if (element) {
+                            if (text != CONSOLE_layer_set_visible && text != CONSOLE_layer_tilemap_get_id && text != CONSOLE_layer_depth && text != CONSOLE_draw_tilemap && text != CONSOLE_layer_get_all_elements) {
+                                element.value += text + "\n";
+                            }
+                            element.scrollTop = element.scrollHeight;
+                        }
+                    };
+                })(),
+                printErr: function(text) {
+                    if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(" ");
+                    console.error(text);
+                },
+                canvas: (function() {
+                    return document.getElementById("canvas");
+                })(),
+                setStatus: function(text) {
+                    if (!Module.setStatus.last) Module.setStatus.last = {
+                        time: Date.now(),
+                        text: ""
+                    };
+                    if (text === Module.setStatus.last.text) return;
+                    var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+                    var now = Date.now();
+                    if (m && now - Module.setStatus.last.time < 30) return;
+                    Module.setStatus.last.time = now;
+                    Module.setStatus.last.text = text;
+                    if (m) {
+                        text = m[1];
+                        progressElement.value = parseInt(m[2]) * 100;
+                        progressElement.max = parseInt(m[4]) * 100;
+                        progressElement.hidden = false;
+                        spinnerElement.hidden = false;
+                    } else {
+                        progressElement.value = null;
+                        progressElement.max = null;
+                        progressElement.hidden = true;
+                        if (!text) {
+                            spinnerElement.style.display = "none";
+                            canvasElement.style.display = "block";
+                        }
+                    }
+                    statusElement.innerHTML = text;
+                },
+                totalDependencies: 0,
+                monitorRunDependencies: function(left) {
+                    this.totalDependencies = Math.max(this.totalDependencies, left);
+                    Module.setStatus(left ? "Preparing... (" + (this.totalDependencies - left) + "/" + this.totalDependencies + ")" : "All downloads complete.");
+                },
+            };
+            Module.setStatus("Downloading...");
+            window.onerror = function(event) {
+                spinnerElement.style.display = "none";
+                Module.setStatus = function(text) {
+                    if (text) Module.printErr("[post-exception status] " + text);
+                };
+            };
+            if (typeof window === "object") {
+                Module['arguments'] = window.location.search.substr(1).trim().split('&');
+                if (!Module['arguments'][0]) {
+                    Module['arguments'] = [];
+                }
+            }
+            
+            function toggleConsole() {
+                var isShown = outputElement.style.display === "flex";
+                if (isShown) {
+                    outputElement.style.display = "none";
+                    outputElement.scrollIntoView(false);
+                } else {
+                    outputElement.style.display = "flex";
+                    outputElement.scrollIntoView(true);
+                }
+            }
+            async function toggleclear_site_cache() {
+                
+                const confirmed = await window.DeltaruneSaveManager.confirmBox("This will clear the site cache. Most importantly, this will ALSO clear ALL OF YOUR SAVES. ONLY do this if you know what you are doing or if the site/game crashes repeatedly. Still wanna continue?");
+                if (confirmed) {
+                    try {
+                        const dbs = await window.indexedDB.databases();
+                        dbs.forEach(db => {
+                            window.indexedDB.deleteDatabase(db.name)
+                        });
+                        window.DeltaruneSaveManager.showMessageBox("All site data has been cleared!\nPlease reload the page for it to take effect.");
+                    } catch (error) {
+                        console.error("Error clearing IndexedDB:", error);
+                        window.DeltaruneSaveManager.showMessageBox("Failed to clear site data. Error: " + error.message);
+                    }
+                }
+            }
+            
+            (function(window) {
+                
+                let stats = null;
+                let isLoaded = false;
+                let isVisible = false;
+                
+                function animationLoop() {
+                    if (stats) {
+                        stats.update();
+                        requestAnimationFrame(animationLoop);
+                    }
+                }
+                
+                function init() {
+                    
+                    stats = new Stats();
+                    
+                    stats.showPanel(0);
+                    
+                    document.body.appendChild(stats.dom);
+                    
+                    requestAnimationFrame(animationLoop);
+                    
+                    isLoaded = true;
+                    isVisible = true;
+                    console.log('FPS counter initialized!');
+                }
+                
+                function toggle() {
+                    
+                    if (!isLoaded) {
+                        console.log('Loading stats.js library...');
+                        
+                        const script = document.createElement('script');
+                        script.src = 'https://mrdoob.github.io/stats.js/build/stats.min.js';
+                        
+                        script.onload = init;
+                        
+                        document.head.appendChild(script);
+                        return;
+                    }
+                    
+                    if (isVisible) {
+                        
+                        stats.dom.style.display = 'none';
+                        isVisible = false;
+                        console.log('FPS counter hidden.');
+                    } else {
+                        
+                        stats.dom.style.display = 'block';
+                        isVisible = true;
+                        console.log('FPS counter shown.');
+                    }
+                }
+                
+                window.toggleFPS = toggle;
+                
+            })(window);
+            
+            var g_pWadLoadCallback = undefined;
+            
+            function setWadLoadCallback(_wadLoadCallback) {
+                g_pWadLoadCallback = _wadLoadCallback;
+            }
+            var g_pAddAsyncMethod = -1;
+            
+            function setAddAsyncMethod(asyncMethod) {
+                g_pAddAsyncMethod = asyncMethod;
+            }
+            var g_pJSExceptionHandler = undefined;
+            
+            function setJSExceptionHandler(exceptionHandler) {
+                if (typeof exceptionHandler == "function") {
+                    g_pJSExceptionHandler = exceptionHandler;
+                }
+            }
+            
+            function hasJSExceptionHandler() {
+                return (g_pJSExceptionHandler != undefined) && (typeof g_pJSExceptionHandler == "function");
+            }
+            
+            function doJSExceptionHandler(exceptionJSON) {
+                if (typeof g_pJSExceptionHandler == "function") {
+                    var exception = JSON.parse(exceptionJSON);
+                    g_pJSExceptionHandler(exception);
+                }
+            }
+            
+            function manifestFiles() {
+                return [ "AUDIO_INTRONOISE.ogg", "audiogroup1.dat", "execute_program_pipe_x64.dll", "lang/lang_ja.json", "mus/4rd_sanctuary.ogg", "mus/4rd_sanctuary_noguit.ogg", "mus/AUDIO_ANOTHERHIM.ogg", "mus/AUDIO_DARKNESS.ogg", "mus/AUDIO_DEFEAT.ogg", "mus/AUDIO_DRONE.ogg", "mus/AUDIO_STORY.ogg", "mus/Flowerman_Arrangement.ogg", "mus/GALLERY.ogg", "mus/KEYGEN.ogg", "mus/THE_HOLY.ogg", "mus/TV_GAME.ogg", "mus/acid_tunnel.ogg", "mus/afterrain_inside.ogg", "mus/alarm_titlescreen.ogg", "mus/alley_ambience.ogg", "mus/alt_church_lobby.ogg", "mus/ambientwater_weird.ogg", "mus/annoying_prophecy.ogg", "mus/april_2012.ogg", "mus/asgore_conspiracy.ogg", "mus/asgore_serious.ogg", "mus/asgore_serious_drum_only_flowery_version.ogg", "mus/asgore_serious_drum_only_low.ogg", "mus/baci_distort.ogg", "mus/baci_perugina.ogg", "mus/basement.ogg", "mus/battle.ogg", "mus/battle_preview.ogg", "mus/battle_preview_crisp.ogg", "mus/battle_vapor.ogg", "mus/bell_ambience.ogg", "mus/berdly_audience.ogg", "mus/berdly_battle_heartbeat_true.ogg", "mus/berdly_chase.ogg", "mus/berdly_descend.ogg", "mus/berdly_flashback.ogg", "mus/berdly_theme.ogg", "mus/bird.ogg", "mus/birds_ch5.ogg", "mus/blue_flower.ogg", "mus/board4_rhythm.ogg", "mus/board_4.ogg", "mus/board_4_challenge.ogg", "mus/board_lancer_dig.ogg", "mus/board_ocean.ogg", "mus/board_sword_music.ogg", "mus/board_zelda.ogg", "mus/boxing_boss.ogg", "mus/boxing_boss_preview.ogg", "mus/boxing_boss_preview_crisp.ogg", "mus/boxing_game.ogg", "mus/bratty_confession.ogg", "mus/card_castle.ogg", "mus/carol_appeared.ogg", "mus/castle_foyer.ogg", "mus/castle_funk_long.ogg", "mus/castle_intro.ogg", "mus/castle_loop.ogg", "mus/castle_top.ogg", "mus/castletown.ogg", "mus/castletown_empty.ogg", "mus/catti_confession.ogg", "mus/ch2_credits.ogg", "mus/ch3-practice_song_combined.ogg", "mus/ch3-practice_song_noguit.ogg", "mus/ch3_board1.ogg", "mus/ch3_board2.ogg", "mus/ch3_board3.ogg", "mus/ch3_karaoke_example_guit_only.ogg", "mus/ch3_karaoke_example_guitar_only_v2.ogg", "mus/ch3_karaoke_example_noguit.ogg", "mus/ch3_karaoke_example_noguitar_v2.ogg", "mus/ch3_karaoke_example_together_ex.ogg", "mus/ch3_karaoke_full.ogg", "mus/ch3_karaoke_no_guitar.ogg", "mus/ch3_karaoke_preview.ogg", "mus/ch3_karaoke_preview_crisp.ogg", "mus/ch3_south_of_the_border.ogg", "mus/ch3_tvtime.ogg", "mus/ch3_tvtime_guitar.ogg", "mus/ch4_battle.ogg", "mus/ch4_credits.ogg", "mus/ch4_extra_boss.ogg", "mus/ch4_first_intro.ogg", "mus/ch4_first_intro_breaking.ogg", "mus/ch5_credits.ogg", "mus/ch5_intro_audio.ogg", "mus/ch5_inversion_lake_chant.ogg", "mus/ch5_weird_monologue.ogg", "mus/ch5_weird_monologue_deep.ogg", "mus/charjoined.ogg", "mus/checkers.ogg", "mus/church_dark_study.ogg", "mus/church_hymn.ogg", "mus/church_lightning.ogg", "mus/church_lw.ogg", "mus/church_lw_night.ogg", "mus/church_wip.ogg", "mus/church_zone2_alt_longer_test.ogg", "mus/church_zone3.ogg", "mus/cliff.ogg", "mus/cliff_jump_ambience.ogg", "mus/cliff_jump_ambience_nowind.ogg", "mus/climb.ogg", "mus/coolbeat.ogg", "mus/cowboy_song.ogg", "mus/creepychase.ogg", "mus/creepydoor.ogg", "mus/creepylandscape.ogg", "mus/cyber.ogg", "mus/cyber_battle.ogg", "mus/cyber_battle_end.ogg", "mus/cyber_battle_prelude.ogg", "mus/cyber_shop.ogg", "mus/cybercity.ogg", "mus/cybercity_alt.ogg", "mus/cybercity_old.ogg", "mus/cyberhouse.ogg", "mus/cybershop_christmas.ogg", "mus/d.ogg", "mus/dark_place.ogg", "mus/darkchurch_intro.ogg", "mus/deep_noise.ogg", "mus/deltarune_logo_ch5_itoki.ogg", "mus/deltarune_piano_collections_by_trevor_alan_gomes.ogg", "mus/dog_balloon.ogg", "mus/dogcheck.ogg", "mus/dogroom.ogg", "mus/dontforget.ogg", "mus/elevator.ogg", "mus/fanfare.ogg", "mus/festival.ogg", "mus/festival_after.ogg", "mus/festival_night.ogg", "mus/field_of_hopes.ogg", "mus/field_of_hopes_insaneintherain_intro.ogg", "mus/field_of_hopes_insaneintherain_loop.ogg", "mus/field_of_hopes_preview.ogg", "mus/field_of_hopes_preview_crisp.ogg", "mus/findher.ogg", "mus/flashback_excerpt.ogg", "mus/flower_cafe.ogg", "mus/flower_castle.ogg", "mus/flowery.ogg", "mus/flowery_diner_romantic.ogg", "mus/flowery_iog.ogg", "mus/flowery_iog_extended.ogg", "mus/flowery_sad.ogg", "mus/flowery_skateboard.ogg", "mus/forest.ogg", "mus/friendship.ogg", "mus/gameover_short.ogg", "mus/gerson_defeated.ogg", "mus/gerson_theme_intro.ogg", "mus/gerson_theme_nointro.ogg", "mus/giant_queen_appears.ogg", "mus/gigaqueen_pre.ogg", "mus/glacier.ogg", "mus/greenroom_detune.ogg", "mus/happy_town.ogg", "mus/heartbeat.ogg", "mus/hip_shop.ogg", "mus/home.ogg", "mus/honksong.ogg", "mus/inappropriate_recycling.ogg", "mus/inukuma_wip.ogg", "mus/jitterbug.ogg", "mus/jitterbug_muffled.ogg", "mus/joker.ogg", "mus/kikky_upgrade.ogg", "mus/kingboss.ogg", "mus/knight.ogg", "mus/knight_appears.ogg", "mus/kris_piano_lancer_waltz.ogg", "mus/kris_piano_last_prophecy.ogg", "mus/kris_piano_lower.ogg", "mus/kris_piano_prophecy.ogg", "mus/kris_piano_quiz.ogg", "mus/kris_piano_rouxls.ogg", "mus/kris_piano_sevenfour.ogg", "mus/kris_piano_shop.ogg", "mus/kris_piano_waitingroom.ogg", "mus/lancer.ogg", "mus/lancer_annoying.ogg", "mus/lancer_susie.ogg", "mus/lancerfight.ogg", "mus/legend.ogg", "mus/legend_altered.ogg", "mus/man.ogg", "mus/man_2.ogg", "mus/man_nes.ogg", "mus/mansion.ogg", "mus/mansion_entrance.ogg", "mus/me.ogg", "mus/meeting_flower.ogg", "mus/meeting_flower_cowboy.ogg", "mus/meeting_flower_orange.ogg", "mus/meeting_flower_orange_highpitch.ogg", "mus/meeting_flower_upbeat_drum.ogg", "mus/menu.ogg", "mus/mike.ogg", "mus/mike_zone.ogg", "mus/miniboss_new_section_idea_wip.ogg", "mus/minigame_kart.ogg", "mus/muffled_rain.ogg", "mus/mus_birdnoise.ogg", "mus/mus_confession.ogg", "mus/mus_date_fight.ogg", "mus/mus_date_tense.ogg", "mus/mus_introcar.ogg", "mus/mus_knightthought.ogg", "mus/mus_race.ogg", "mus/mus_school.ogg", "mus/mus_temloopshort.ogg", "mus/muscle.ogg", "mus/music_guys.ogg", "mus/music_guys_intro.ogg", "mus/napsta_alarm.ogg", "mus/nes_intro_extended_part2.ogg", "mus/newscast.ogg", "mus/night_ambience.ogg", "mus/nightmare_boss_heavy.ogg", "mus/nightmare_boss_links.ogg", "mus/nightmare_nes.ogg", "mus/noelle.ogg", "mus/noelle_distant.ogg", "mus/noelle_ferriswheel.ogg", "mus/noelle_house_wip.ogg", "mus/noelle_normal.ogg", "mus/noelle_school.ogg", "mus/noelleshouseoutside.ogg", "mus/northernlight.ogg", "mus/ocean.ogg", "mus/oldman_helps_out.ogg", "mus/ominous_message.ogg", "mus/ominous_stab_harsh.ogg", "mus/ominous_stab_harsh_2.ogg", "mus/ominous_worse.ogg", "mus/piano_ambience.ogg", "mus/pianpian.ogg", "mus/pink.ogg", "mus/pink_theme.ogg", "mus/pink_theme_mad.ogg", "mus/pirate_zone.ogg", "mus/prejoker.ogg", "mus/pumpkin_boss.ogg", "mus/queen.ogg", "mus/queen_boss.ogg", "mus/queen_car_radio.ogg", "mus/queen_intro.ogg", "mus/quiet_autumn.ogg", "mus/quiet_church.ogg", "mus/rain.ogg", "mus/raining.ogg", "mus/raining_in_church2.ogg", "mus/rakuichi_buster_wip.ogg", "mus/rhythm_3rd_sanctuary_guit.ogg", "mus/rhythm_3rd_sanctuary_noguit.ogg", "mus/rhythm_knockdown_combined.ogg", "mus/rhythm_knockdown_no_guit.ogg", "mus/root_8bit.ogg", "mus/rouxls_battle.ogg", "mus/rtenna_zoom.ogg", "mus/rudebuster_boss.ogg", "mus/running_water.ogg", "mus/ruruskaado.ogg", "mus/s_neo.ogg", "mus/s_neo_clip.ogg", "mus/sadchord2.ogg", "mus/second_church.ogg", "mus/shinkansen.ogg", "mus/shop1.ogg", "mus/shop_3.ogg", "mus/silly_printer.ogg", "mus/sinedrone_danger.ogg", "mus/sinedrone_danger_high.ogg", "mus/sink_noise.ogg", "mus/smallpiano_room.ogg", "mus/sound_battle_bg.ogg", "mus/spamton_basement.ogg", "mus/spamton_battle.ogg", "mus/spamton_dance.ogg", "mus/spamton_happy.ogg", "mus/spamton_house.ogg", "mus/spamton_laugh_noise.ogg", "mus/spamton_meeting.ogg", "mus/spamton_meeting_intro.ogg", "mus/spamton_neo_after.ogg", "mus/spamton_neo_meeting.ogg", "mus/spamton_neo_mix_ex_wip.ogg", "mus/static_placeholder.ogg", "mus/statue2_level1.ogg", "mus/statue2_level2.ogg", "mus/statue2_level3.ogg", "mus/statue2_level4.ogg", "mus/statue2_level5.ogg", "mus/statue_chord_basic.ogg", "mus/statue_level1.ogg", "mus/statue_level2.ogg", "mus/statue_level3.ogg", "mus/statue_level4.ogg", "mus/stealth.ogg", "mus/strongwind_loop.ogg", "mus/susie_diner.ogg", "mus/tenna_battle.ogg", "mus/tenna_battle_guitar.ogg", "mus/tenna_battle_old.ogg", "mus/tenna_battle_preview.ogg", "mus/tenna_battle_preview_crisp.ogg", "mus/tenna_island.ogg", "mus/tense.ogg", "mus/the_dark_truth.ogg", "mus/thrash_rating.ogg", "mus/thrashmachine.ogg", "mus/tin_night.ogg", "mus/tinnitus.ogg", "mus/titan_battle.ogg", "mus/titan_pre.ogg", "mus/titan_spawn.ogg", "mus/titan_tower.ogg", "mus/town.ogg", "mus/town_day.ogg", "mus/trank.ogg", "mus/tv_changingroom.ogg", "mus/tv_hall_of_fame.ogg", "mus/tv_infrontof.ogg", "mus/tv_noise.ogg", "mus/tv_results_screen.ogg", "mus/tv_static_bad.ogg", "mus/tv_world.ogg", "mus/tvromance.ogg", "mus/vs_susie.ogg", "mus/w.ogg", "mus/wet_tapdancing.ogg", "mus/wet_tapdancing2.ogg", "mus/wet_tapdancing_failed.ogg", "mus/wind.ogg", "mus/wind_highplace.ogg", "shader_replace_simple_x64.dll", "snd_bigcar_yelp.ogg", "snd_churchbell.ogg", "snd_closet_fall.ogg", "snd_closet_impact.ogg", "snd_dtrans_drone.ogg", "snd_dtrans_flip.ogg", "snd_dtrans_heavypassing.ogg", "snd_dtrans_lw.ogg", "snd_dtrans_square.ogg", "snd_dtrans_twinkle.ogg", "snd_fountain_make.ogg", "snd_fountain_target.ogg", "snd_ghostappear.ogg", "snd_great_shine.ogg", "snd_him_quick.ogg", "snd_hitcar.ogg", "snd_hitcar_little.ogg", "snd_icespell.ogg", "snd_paper_rumble.ogg", "snd_paper_surf.ogg", "snd_revival.ogg", "snd_rurus_appear.ogg", "snd_smallcar_yelp.ogg", "snd_snowgrave.ogg", "snd_spell_pacify.ogg", "snd_usefountain.ogg", "vid/ch5_intro_en.mp4", "vid/ch5_intro_jp.mp4" ].join(";");
+            }
+            
+            function onFirstFrameRendered() {}
+            
+            function onGameSetWindowSize(width, height) {
+                if (startingHeight === undefined && startingWidth === undefined) {
+                    console.log("Initial window size set to width: " + width + ", height: " + height);
+                    startingHeight = height;
+                    startingWidth = width;
+                    startingAspect = startingWidth / startingHeight;
+                }
+            }
+            
+            function ensureAspectRatio() {
+                if (canvasElement === undefined || !CHANGE_ASPECT_RATIO || startingHeight === undefined || startingWidth === undefined) {
+                    return;
+                }
+                canvasElement.classList.add("active");
+                const maxWidth = window.innerWidth;
+                const maxHeight = window.innerHeight;
+                var newHeight, newWidth;
+                var heightQuotient = startingHeight / maxHeight;
+                var widthQuotient = startingWidth / maxWidth;
+                if (heightQuotient > widthQuotient) {
+                    newHeight = maxHeight;
+                    newWidth = newHeight * startingAspect;
+                } else {
+                    newWidth = maxWidth;
+                    newHeight = newWidth / startingAspect;
+                }
+                canvasElement.style.height = newHeight + "px";
+                canvasElement.style.width = newWidth + "px";
+                canvasElement.style.position = "absolute";
+                canvasElement.style.left = "50%";
+                canvasElement.style.top = "50%";
+                canvasElement.style.transform = "translate(-50%, -50%)";
+            }
+            
+            function quitIfSupported() {
+                if (window.oprt && window.oprt.closeTab) {
+                    window.oprt.closeTab();
+                } else if (window.chrome && window.chrome.runtime && window.chrome.runtime.sendMessage) {
+                    window.chrome.runtime.sendMessage('mpojjmidmnpcpopbebmecmjdkdbgdeke', {
+                        command: 'closeTab'
+                    });
+                }
+            }
+            
+            function enterFullscreenIfSupported() {
+                if (!window.oprt || !window.oprt.enterFullscreen) {
+                    return;
+                }
+                window.oprt.enterFullscreen();
+                let viewStatus = GM_get_view_status();
+                viewStatus.fullscreen = true;
+                GM_set_view_status(viewStatus);
+            }
+            
+            function lockOrientationIfSupported() {
+                if (!window.oprt || !window.oprt.lockPortraitOrientation || !window.oprt.lockLandscapeOrientation) {
+                    return;
+                }
+                let viewStatus = GM_get_view_status();
+                if (viewStatus.landscape === true && viewStatus.portrait === false) {
+                    window.oprt.lockPortraitOrientation();
+                } else if (viewStatus.landscape === false && viewStatus.portrait === true) {
+                    window.oprt.lockPortraitOrientation();
+                }
+            }
+            const resizeObserver = new ResizeObserver(() => {
+                window.requestAnimationFrame(ensureAspectRatio);
+                setTimeout(() => window.requestAnimationFrame(ensureAspectRatio), 100);
+            });
+            resizeObserver.observe(document.body);
+            if (/Android|iPhone|iPod/i.test(navigator.userAgent)) {
+                bodyElement.className = "scrollingDisabled";
+                outputContainerElement.hidden = true;
+            }
+            document.addEventListener("visibilitychange", (event) => {
+                if (document.visibilityState != "visible") {}
+            });
+            window.addEventListener("load", (event) => {
+                if ((!window.oprt || !window.oprt.enterFullscreen) && (!window.chrome || !window.chrome.runtime || !window.chrome.runtime.sendMessage)) {}
+            });
+            setWadLoadCallback(() => {
+                enterFullscreenIfSupported();
+                lockOrientationIfSupported();
+            });
+        </script>
+        
+        <script type="text/javascript">
+            // Define the paths to your whole files
+            const gameUnxUrl = 'game.unx';
+            const runnerDataUrl = 'runner.data';
+            
+            // --- Interception Logic ---
+            // Intercept 'fetch' requests
+            const originalFetch = window.fetch;
+            window.fetch = async function (url, ...args) {
+                if (url.endsWith("game.unx")) {
+                    return originalFetch(gameUnxUrl, ...args);
+                } else if (url.endsWith("runner.data")) {
+                    return originalFetch(runnerDataUrl, ...args);
+                }
+                return originalFetch(url, ...args);
+            };
+            
+            // Intercept 'XMLHttpRequest' requests
+            const originalOpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+                let newUrl = url;
+                if (url.endsWith("game.unx")) {
+                    newUrl = gameUnxUrl;
+                } else if (url.endsWith("runner.data")) {
+                    newUrl = runnerDataUrl;
+                }
+                return originalOpen.call(this, method, newUrl, ...rest);
+            };
+            
+            let runnerScript = document.createElement("script");
+            runnerScript.src = "runner.js"; // This loads the game engine
+            document.body.appendChild(runnerScript);
+            
+            console.log("File interception is active. Starting the game...");
+        </script>
+        
+        <script>
+            window.DeltaruneSaveManager = (function() {
+                function showMessageBox(message, onConfirm = null) {
+                    const messageBox = document.getElementById('customMessageBox');
+                    const messageBoxText = document.getElementById('messageBoxText');
+                    const messageBoxConfirmBtn = document.getElementById('messageBoxConfirmBtn');
+                    const messageBoxCancelBtn = document.getElementById('messageBoxCancelBtn');
+                    messageBoxText.textContent = message;
+                    messageBoxConfirmBtn.textContent = 'Alright!';
+                    if (messageBoxCancelBtn) {
+                        messageBoxCancelBtn.style.display = 'none';
+                    }
+                    messageBox.style.display = 'flex';
+                    messageBoxConfirmBtn.onclick = () => {
+                        messageBox.style.display = 'none';
+                        if (onConfirm) onConfirm();
+                    };
+                }
+                
+                function confirmBox(message) {
+                    return new Promise((resolve) => {
+                        const messageBox = document.getElementById('customMessageBox');
+                        const messageBoxText = document.getElementById('messageBoxText');
+                        const messageBoxConfirmBtn = document.getElementById('messageBoxConfirmBtn');
+                        let messageBoxCancelBtn = document.getElementById('messageBoxCancelBtn');
+                        if (!messageBoxCancelBtn) {
+                            messageBoxCancelBtn = document.createElement('button');
+                            messageBoxCancelBtn.id = 'messageBoxCancelBtn';
+                            messageBoxCancelBtn.style.backgroundColor = '#6c757d';
+                            messageBoxCancelBtn.style.marginLeft = '10px';
+                            messageBoxConfirmBtn.parentNode.appendChild(messageBoxCancelBtn);
+                        }
+                        messageBoxText.textContent = message;
+                        messageBoxConfirmBtn.textContent = 'Sure!';
+                        messageBoxCancelBtn.textContent = 'Nah.';
+                        messageBoxCancelBtn.style.display = 'inline-block';
+                        messageBox.style.display = 'flex';
+                        messageBoxConfirmBtn.onclick = () => {
+                            messageBox.style.display = 'none';
+                            resolve(true);
+                        };
+                        messageBoxCancelBtn.onclick = () => {
+                            messageBox.style.display = 'none';
+                            resolve(false);
+                        };
+                    });
+                }
+                const DB_NAME = '/_savedata';
+                const STORE_NAME = 'FILE_DATA';
+                const DB_VERSION = 21;
+                let db;
+                async function openIndexedDB() {
+                    if (db) return db;
+                    if (!window.indexedDB) {
+                        showMessageBox("Your browser doesn't support IndexedDB. Save manager will not work.");
+                        throw new Error("IndexedDB not supported.");
+                    }
+                    return new Promise((resolve, reject) => {
+                        const request = indexedDB.open(DB_NAME, DB_VERSION);
+                        request.onerror = (event) => {
+                            console.error("IndexedDB error:", event.target.error);
+                            showMessageBox("Error opening IndexedDB: " + (event.target.error ? event.target.error.message : "Unknown error"));
+                            reject("Error opening IndexedDB.");
+                        };
+                        request.onsuccess = (event) => {
+                            db = event.target.result;
+                            console.log("IndexedDB opened successfully.");
+                            resolve(db);
+                        };
+                        request.onupgradeneeded = (event) => {
+                            db = event.target.result;
+                            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                                db.createObjectStore(STORE_NAME);
+                                console.log(`Object store '${STORE_NAME}' created.`);
+                            }
+                        };
+                    });
+                }
+                async function getSaveFiles() {
+                    try {
+                        await openIndexedDB();
+                        const transaction = db.transaction([STORE_NAME], 'readonly');
+                        const objectStore = transaction.objectStore(STORE_NAME);
+                        const request = objectStore.getAll();
+                        return new Promise((resolve, reject) => {
+                            request.onsuccess = (event) => {
+                                const files = event.target.result;
+                                const fileNamesRequest = objectStore.getAllKeys();
+                                fileNamesRequest.onsuccess = (eventKeys) => {
+                                    const fileNames = eventKeys.target.result;
+                                    const result = files.map((file, index) => ({
+                                        name: fileNames[index],
+                                        data: file
+                                    }));
+                                    resolve(result);
+                                };
+                                fileNamesRequest.onerror = (eventKeys) => {
+                                    console.error("Error getting file names:", eventKeys.target.error);
+                                    reject("Error getting file names: " + (eventKeys.target.error ? eventKeys.target.error.message : "Unknown error"));
+                                };
+                            };
+                            request.onerror = (event) => {
+                                console.error("Error getting save files from object store:", event.target.error);
+                                reject("Error getting save files: " + (event.target.error ? event.target.error.message : "Unknown error"));
+                            };
+                        });
+                    } catch (error) {
+                        console.error("Error in getSaveFiles:", error);
+                        showMessageBox("Failed to retrieve save files: " + error.message);
+                        return [];
+                    }
+                }
+                async function displaySaveFiles() {
+                    const saveFileListDiv = document.getElementById('saveFileList');
+                    saveFileListDiv.innerHTML = '';
+                    try {
+                        const files = await getSaveFiles();
+                        if (files.length === 0) {
+                            saveFileListDiv.innerHTML = 'No saves found. Try importing one or saving in-game first.';
+                            return;
+                        }
+                        files.forEach(fileEntry => {
+                            const fileName = fileEntry.name;
+                            const fileData = fileEntry.data;
+                            const itemDiv = document.createElement('div');
+                            itemDiv.classList.add('save-file-item');
+                            const infoDiv = document.createElement('div');
+                            infoDiv.classList.add('save-file-info');
+                            const timestamp = fileData.timestamp ? new Date(fileData.timestamp).toLocaleString() : 'N/A';
+                            const size = fileData.contents ? fileData.contents.byteLength : 0;
+                            infoDiv.innerHTML = `
+                      
+                          
+                          
+                                      <span>
+                                          <strong>File:</strong> ${fileName}
+                          
+                          
+                                      </span>
+                                      <span>
+                                          <strong>Last Modified:</strong> ${timestamp}
+                          
+                          
+                                      </span>
+                                      <span>
+                                          <strong>Size:</strong> ${size} bytes
+                          
+                          
+                                      </span>
+                    `;
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.classList.add('save-file-actions');
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.textContent = 'Download';
+                    downloadBtn.onclick = () => downloadSaveFile(fileName, fileData.contents);
+                    actionsDiv.appendChild(downloadBtn);
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.classList.add('delete-btn');
+                    deleteBtn.onclick = async () => {
+                        const confirmed = await confirmBox(`Are you sure you want to delete "${fileName}"?`);
+                        if (confirmed) {
+                            await deleteSaveFile(fileName);
+                        }
+                    };
+                    actionsDiv.appendChild(deleteBtn);
+                    itemDiv.appendChild(infoDiv);
+                    itemDiv.appendChild(actionsDiv);
+                    saveFileListDiv.appendChild(itemDiv);
+                        });
+                    } catch (error) {
+                        console.error("Error displaying save files:", error);
+                        saveFileListDiv.innerHTML = `
+                                      
+                                      
+                                      <p style="text-align: center; color: #FA1E4E;">Error loading files: ${error.message}</p>`;
+                    }
+                }
+                
+                function downloadSaveFile(fileName, contents) {
+                    if (!contents) {
+                        showMessageBox("No content to download for this file.");
+                        return;
+                    }
+                    const blob = new Blob([contents], {
+                        type: 'application/octet-stream'
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showMessageBox(`File "${fileName}" downloaded.`);
+                }
+                async function deleteSaveFile(fileName) {
+                    try {
+                        await openIndexedDB();
+                        const transaction = db.transaction([STORE_NAME], 'readwrite');
+                        const objectStore = transaction.objectStore(STORE_NAME);
+                        const request = objectStore.delete(fileName);
+                        return new Promise((resolve, reject) => {
+                            request.onsuccess = () => {
+                                showMessageBox(`File "${fileName}" deleted successfully.`);
+                                displaySaveFiles();
+                                resolve();
+                            };
+                            request.onerror = (event) => {
+                                console.error("Error deleting file:", event.target.error);
+                                showMessageBox(`Error deleting file "${fileName}": ` + (event.target.error ? event.target.error.message : "Unknown error"));
+                                reject("Error deleting file.");
+                            };
+                        });
+                    } catch (error) {
+                        console.error("Error in deleteSaveFile:", error);
+                        showMessageBox("Failed to delete save file: " + error.message);
+                    }
+                }
+                async function handleUpload() {
+                    const uploadFileInput = document.getElementById('uploadFileInput');
+                    const uploadFileNameInput = document.getElementById('uploadFileNameInput');
+                    const files = uploadFileInput.files;
+                    if (files.length === 0) {
+                        showMessageBox("Please select at least one file to upload.");
+                        return;
+                    }
+                    try {
+                        const uploadPromises = [];
+                        for (let i = 0; i < files.length; i++) {
+                            const file = files[i];
+                            let fileName = (files.length === 1 && uploadFileNameInput.value.trim())
+                            ? uploadFileNameInput.value.trim()
+                            : file.name;
+                            fileName = fileName.replace(/^_savedata\//, '');
+                            fileName = fileName.replace(/^\//, '');
+                            if (!fileName) {
+                                showMessageBox(`Invalid file name for "${file.name}" after processing. Skipping.`);
+                                continue;
+                            }
+                            const arrayBuffer = await file.arrayBuffer();
+                            const uint8ArrayContents = new Uint8Array(arrayBuffer);
+                            const saveObject = {
+                                timestamp: new Date(),
+                                mode: 33206,
+                                contents: uint8ArrayContents
+                            };
+                            const finalFileName = `/_savedata/${fileName}`;
+                            uploadPromises.push(saveSaveFile(finalFileName, saveObject));
+                        }
+                        await Promise.all(uploadPromises);
+                        showMessageBox(`${files.length} file(s) uploaded and saved successfully.`);
+                        uploadFileInput.value = '';
+                        uploadFileNameInput.value = '';
+                        displaySaveFiles();
+                    } catch (error) {
+                        console.error("Error uploading file(s):", error);
+                        showMessageBox("Failed to upload one or more files: " + error.message);
+                    }
+                }
+                async function exportAllToZip() {
+                    try {
+                        const files = await getSaveFiles();
+                        if (files.length === 0) {
+                            showMessageBox("No save files to export.");
+                            return;
+                        }
+                        const zip = new JSZip();
+                        files.forEach(fileEntry => {
+                            const fileName = fileEntry.name.replace(/^\/_savedata\//, ''); // Clean up name for ZIP
+                            const contents = fileEntry.data.contents;
+                            if (contents) {
+                                const zipContents = (contents instanceof Int8Array)
+                                ? new Uint8Array(contents.buffer)  // Convert if old Int8Array
+                                : contents;  // Already Uint8Array or compatible
+                                zip.file(fileName, zipContents);
+                            }
+                        });
+                        const zipBlob = await zip.generateAsync({ type: 'blob' });
+                        const url = URL.createObjectURL(zipBlob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'deltarune_saves.zip';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        showMessageBox("All save files exported to deltarune_saves.zip.");
+                    } catch (error) {
+                        console.error("Error exporting to ZIP:", error);
+                        showMessageBox("Failed to export to ZIP: " + error.message);
+                    }
+                }
+                async function saveSaveFile(fileName, data) {
+                    try {
+                        await openIndexedDB();
+                        const transaction = db.transaction([STORE_NAME], 'readwrite');
+                        const objectStore = transaction.objectStore(STORE_NAME);
+                        const request = objectStore.put(data, fileName);
+                        return new Promise((resolve, reject) => {
+                            request.onsuccess = () => {
+                                resolve();
+                            };
+                            request.onerror = (event) => {
+                                console.error("Error saving file:", event.target.error);
+                                showMessageBox("Error saving file: " + (event.target.error ? event.target.error.message : "Unknown error"));
+                                reject("Error saving file.");
+                            };
+                        });
+                    } catch (error) {
+                        console.error("Error in saveSaveFile:", error);
+                        showMessageBox("Failed to save file: " + error.message);
+                    }
+                }
+                async function openSaveManager() {
+                    const saveManagerModal = document.getElementById('saveManagerModal');
+                    saveManagerModal.style.display = 'flex';
+                    await displaySaveFiles();
+                    GM_pause();
+                }
+                
+                function closeSaveManager() {
+                    window.location.reload();
+                    const saveManagerModal = document.getElementById('saveManagerModal');
+                    saveManagerModal.style.display = 'none';
+                }
+                
+                function closeSMnoreload() {
+                    const saveManagerModal = document.getElementById('saveManagerModal');
+                    saveManagerModal.style.display = 'none';
+                    GM_unpause();
+                }
+                let uploadFileNameInput = null;
+                
+                function protectInputFromGame(e) {
+                    if (uploadFileNameInput && document.activeElement === uploadFileNameInput) {
+                        e.stopImmediatePropagation();
+                    }
+                }
+                document.addEventListener('DOMContentLoaded', () => {
+                    uploadFileNameInput = document.getElementById('uploadFileNameInput');
+                    const uploadFileInput = document.getElementById('uploadFileInput');
+                    
+                    if (uploadFileInput && uploadFileNameInput) {
+                        if (uploadFileInput && uploadFileNameInput) {
+                            uploadFileInput.addEventListener('change', () => {
+                                if (uploadFileInput.files.length === 1) {
+                                    uploadFileNameInput.disabled = false;
+                                    uploadFileNameInput.value = uploadFileInput.files[0].name;
+                                    uploadFileNameInput.placeholder = 'Enter the corresponding filename (e.g., filech1_0, dr.ini / for single file only)';
+                                } else {
+                                    uploadFileNameInput.disabled = true;
+                                    uploadFileNameInput.value = '';
+                                    uploadFileNameInput.placeholder = 'Custom filenames do not work when selecting multiple files!';
+                                }
+                            });
+                        }
+                    }
+                    if (uploadFileNameInput) {
+                        window.addEventListener('keydown', protectInputFromGame, true);
+                        window.addEventListener('keyup', protectInputFromGame, true);
+                        window.addEventListener('keypress', protectInputFromGame, true);
+                    }
+                });
+                return {
+                    openSaveManager: openSaveManager,
+                    closeSaveManager: closeSaveManager,
+                    closeSMnoreload: closeSMnoreload,
+                    handleUpload: handleUpload,
+                    showMessageBox: showMessageBox,
+                    confirmBox: confirmBox,
+                    openIndexedDB: openIndexedDB,
+                    exportAllToZip: exportAllToZip
+                };
+            })();
+            window.addEventListener('load', async () => {
+                try {
+                    await window.DeltaruneSaveManager.openIndexedDB();
+                } catch (error) {
+                    console.error("Failed to initialize IndexedDB on load:", error);
+                }
+            });
+        </script>
+        
+        <script>
+            function simulateKeyEvent(eventType, key, keyCode) {
+                const event = new KeyboardEvent(eventType, {
+                    key: key,
+                    keyCode: keyCode,
+                    which: keyCode,
+                    bubbles: true,
+                    cancelable: true,
+                });
+                document.dispatchEvent(event);
+            }
+        </script>
+        <script>
+		window.addEventListener('load', () => {
+
+    function isMobileDevice() {
+
+        if (navigator.userAgentData && navigator.userAgentData.mobile) {
+            return true;
+        }
+
+        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+        return mobileRegex.test(navigator.userAgent);
+    }
+
+    if (!isMobileDevice()) {
+        return;
+    }
+
+    let tapCount = 0;
+    let tapTimer = null;
+    const requiredTaps = 5;
+    const tapTimeout = 400;
+
+    document.body.addEventListener('touchstart', (e) => {
+
+        if (e.target.closest('#button-zone') || e.target.closest('#joystick-zone')) {
+            return;
+        }
+
+        tapCount++;
+
+        clearTimeout(tapTimer);
+
+        tapTimer = setTimeout(() => {
+            tapCount = 0;
+        }, tapTimeout);
+
+        if (tapCount >= requiredTaps) {
+
+            if (typeof showUI === 'function') {
+                showUI();
+            }
+
+            tapCount = 0;
+            clearTimeout(tapTimer);
+        }
+    });
+
+    const mobileControls = document.getElementById('mobile-controls');
+    if (mobileControls) {
+        mobileControls.style.display = 'block';
+    }
+
+    const buttonZone = document.getElementById('button-zone');
+    const joystickZone = document.getElementById('joystick-zone');
+    const keyState = {
+        up: false,
+        down: false,
+        left: false,
+        right: false
+    };
+    const keyMap = {
+        up: {
+            key: 'ArrowUp',
+            code: 38
+        },
+        down: {
+            key: 'ArrowDown',
+            code: 40
+        },
+        left: {
+            key: 'ArrowLeft',
+            code: 37
+        },
+        right: {
+            key: 'ArrowRight',
+            code: 39
+        }
+    };
+    let joystick = null;
+
+    function createOrUpdateJoystick() {
+        if (joystick) {
+            joystick.destroy();
+        }
+        if (!joystickZone) return;
+        const zoneRect = joystickZone.getBoundingClientRect();
+        if (zoneRect.width === 0 || zoneRect.height === 0) {
+            console.warn('joystickZone has zero size, skipping joystick creation');
+            return;
+        }
+
+        const joystickSize = Math.max(100, Math.min(zoneRect.width, zoneRect.height) * 0.6);
+        const centerLeft = zoneRect.width / 2;
+        const centerTop = zoneRect.height / 2;
+        joystick = nipplejs.create({
+            zone: joystickZone,
+            mode: 'static',
+            position: {
+                left: centerLeft + 'px',
+                top: centerTop + 'px'
+            },
+            size: joystickSize,
+            color: 'white',
+            threshold: 0.2
+        });
+
+        joystick.on('move', (evt, data) => {
+            if (!data || !data.vector) return;
+
+            const x = data.vector.x;
+            const y = data.vector.y;
+            const threshold = 0.3;
+
+            const newKeyState = {
+                up: false,
+                down: false,
+                left: false,
+                right: false
+            };
+
+            if (y < -threshold) newKeyState.down = true;
+            if (y > threshold) newKeyState.up = true;
+            if (x < -threshold) newKeyState.left = true;
+            if (x > threshold) newKeyState.right = true;
+
+            for (const dir in keyState) {
+                if (keyState[dir] && !newKeyState[dir]) {
+                    simulateKeyEvent('keyup', keyMap[dir].key, keyMap[dir].code);
+                } else if (!keyState[dir] && newKeyState[dir]) {
+                    simulateKeyEvent('keydown', keyMap[dir].key, keyMap[dir].code);
+                }
+                keyState[dir] = newKeyState[dir];
+            }
+        });
+
+        joystick.on('end', () => {
+            for (const dir in keyState) {
+                if (keyState[dir]) {
+                    simulateKeyEvent('keyup', keyMap[dir].key, keyMap[dir].code);
+                    keyState[dir] = false;
+                }
+            }
+        });
+    }
+
+    function updateControlPositions() {
+        if (!buttonZone || !joystickZone) return;
+        const isTabletLayout = (window.innerWidth / window.innerHeight) > 1.3;
+        joystickZone.style.cssText = '';
+        buttonZone.style.cssText = '';
+        if (isTabletLayout) {
+            const sideWidth = '25vw';
+            joystickZone.style.left = '0';
+            joystickZone.style.top = '0';
+            joystickZone.style.width = sideWidth;
+            joystickZone.style.height = '100%';
+            joystickZone.style.background = 'transparent';
+            buttonZone.style.right = '0';
+            buttonZone.style.top = '0';
+            buttonZone.style.width = sideWidth;
+            buttonZone.style.height = '100%';
+            buttonZone.style.background = 'transparent';
+        } else {
+            const controlHeight = '30vh';
+            joystickZone.style.left = '0';
+            joystickZone.style.bottom = '0';
+            joystickZone.style.width = '50vw';
+            joystickZone.style.height = controlHeight;
+            joystickZone.style.background = 'rgba(0,0,0,0.2)';
+            buttonZone.style.right = '0';
+            buttonZone.style.bottom = '0';
+            buttonZone.style.width = '50vw';
+            buttonZone.style.height = controlHeight;
+            buttonZone.style.background = 'rgba(0,0,0,0.2)';
+        }
+        createOrUpdateJoystick();
+    }
+    const resizeObserver = new ResizeObserver(() => {
+        setTimeout(() => {
+            window.requestAnimationFrame(updateControlPositions);
+        }, 100);
+    });
+    resizeObserver.observe(document.body);
+    setTimeout(updateControlPositions, 500);
+    const buttons = [{
+        id: 'button-z',
+        key: 'z',
+        keyCode: 90,
+        img_up: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTAuNSAyNyAyOSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj4KPG1ldGFkYXRhPk1hZGUgd2l0aCBQaXhlbHMgdG8gU3ZnIGh0dHBzOi8vY29kZXBlbi5pby9zaHNoYXcvcGVuL1hieHZOajwvbWV0YWRhdGE+CjxwYXRoIHN0cm9rZT0iIzQ3NDA2ZiIgZD0iTTggMGgxMU02IDFoMTVNNSAyaDE3TTQgM2gxOU0zIDRoMjFNMyA1aDRNMjAgNWg0TTIgNmg1TTIwIDZoNU0yIDdoNU05IDdoOE0yMCA3aDVNMSA4aDZNOCA4aDhNMjAgOGg2TTEgOWgxNE0xOSA5aDdNMSAxMGgxM00xOCAxMGg4TTEgMTFoMTJNMTcgMTFoOU0xIDEyaDExTTE2IDEyaDEwTTEgMTNoMTBNMTUgMTNoMTFNMSAxNGg5TTE0IDE0aDEyTTEgMTVoOE0xMyAxNWgxM00yIDE2aDZNMTIgMTZoN00yMCAxNmg1TTIgMTdoNU0xMSAxN2g3TTIwIDE3aDVNMyAxOGg0TTIwIDE4aDRNMyAxOWg0TTIwIDE5aDRNNCAyMGgxOU01IDIxaDE3TTYgMjJoMTVNOCAyM2gxMU0xMCAyNGg3IiAvPgo8cGF0aCBzdHJva2U9IiMyYTFmNDIiIGQ9Ik03IDVoMTNNNyA2aDEzTTEgN2gxTTcgN2gyTTE3IDdoM00yNSA3aDFNNyA4aDFNMTYgOGg0TTE1IDloNE0wIDEwaDFNMTQgMTBoNE0yNiAxMGgxTTAgMTFoMU0xMyAxMWg0TTI2IDExaDFNMCAxMmgxTTEyIDEyaDRNMjYgMTJoMU0wIDEzaDFNMTEgMTNoNE0yNiAxM2gxTTAgMTRoMU0xMCAxNGg0TTI2IDE0aDFNMCAxNWgxTTkgMTVoNE0yNiAxNWgxTTAgMTZoMk04IDE2aDRNMTkgMTZoMU0yNSAxNmgyTTAgMTdoMk03IDE3aDRNMTggMTdoMk0yNSAxN2gyTTAgMThoM003IDE4aDEzTTI0IDE4aDNNMSAxOWgyTTcgMTloMTNNMjQgMTloMk0xIDIwaDNNMjMgMjBoM00xIDIxaDRNMjIgMjFoNE0yIDIyaDRNMjEgMjJoNE0zIDIzaDVNMTkgMjNoNU0zIDI0aDdNMTcgMjRoN000IDI1aDE5TTYgMjZoMTVNNyAyN2gxM00xMCAyOGg3IiAvPgo8L3N2Zz4=',
+        img_down: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTAuNSAyNyAyOSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj4KPG1ldGFkYXRhPk1hZGUgd2l0aCBQaXhlbHMgdG8gU3ZnIGh0dHBzOi8vY29kZXBlbi5pby9zaHNoYXcvcGVuL1hieHZOajwvbWV0YWRhdGE+CjxwYXRoIHN0cm9rZT0iIzQ3NDA2ZiIgZD0iTTggMmgxMU02IDNoMTVNNSA0aDE3TTQgNWgxOU0zIDZoMjFNMyA3aDRNMjAgN2g0TTIgOGg1TTIwIDhoNU0yIDloNU05IDloOE0yMCA5aDVNMSAxMGg2TTggMTBoOE0yMCAxMGg2TTEgMTFoMTRNMTkgMTFoN00xIDEyaDEzTTE4IDEyaDhNMSAxM2gxMk0xNyAxM2g5TTEgMTRoMTFNMTYgMTRoMTBNMSAxNWgxME0xNSAxNWgxMU0xIDE2aDlNMTQgMTZoMTJNMSAxN2g4TTEzIDE3aDEzTTIgMThoNk0xMiAxOGg3TTIwIDE4aDVNMiAxOWg1TTExIDE5aDdNMjAgMTloNU0zIDIwaDRNMjAgMjBoNE0zIDIxaDRNMjAgMjFoNE00IDIyaDE5TTUgMjNoMTdNNiAyNGgxNU04IDI1aDExTTEwIDI2aDciIC8+CjxwYXRoIHN0cm9rZT0iI2NjNzIzZiIgZD0iTTcgN2gxM003IDhoMTNNNyA5aDJNMTcgOWgzTTcgMTBoMU0xNiAxMGg0TTE1IDExaDRNMTQgMTJoNE0xMyAxM2g0TTEyIDE0aDRNMTEgMTVoNE0xMCAxNmg0TTkgMTdoNE04IDE4aDRNMTkgMThoMU03IDE5aDRNMTggMTloMk03IDIwaDEzTTcgMjFoMTMiIC8+CjxwYXRoIHN0cm9rZT0iIzJhMWY0MiIgZD0iTTEgOWgxTTI1IDloMU0wIDEyaDFNMjYgMTJoMU0wIDEzaDFNMjYgMTNoMU0wIDE0aDFNMjYgMTRoMU0wIDE1aDFNMjYgMTVoMU0wIDE2aDFNMjYgMTZoMU0wIDE3aDFNMjYgMTdoMU0wIDE4aDJNMjUgMThoMk0xIDE5aDFNMjUgMTloMU0xIDIwaDJNMjQgMjBoMk0xIDIxaDJNMjQgMjFoMk0yIDIyaDJNMjMgMjJoMk0zIDIzaDJNMjIgMjNoMk0zIDI0aDNNMjEgMjRoM000IDI1aDRNMTkgMjVoNE02IDI2aDRNMTcgMjZoNE03IDI3aDEzTTEwIDI4aDciIC8+Cjwvc3ZnPg=='
+    }, {
+        id: 'button-x',
+        key: 'x',
+        keyCode: 88,
+        img_up: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTAuNSAyNyAyOSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj4KPG1ldGFkYXRhPk1hZGUgd2l0aCBQaXhlbHMgdG8gU3ZnIGh0dHBzOi8vY29kZXBlbi5pby9zaHNoYXcvcGVuL1hieHZOajwvbWV0YWRhdGE+CjxwYXRoIHN0cm9rZT0iIzQ3NDA2ZiIgZD0iTTggMGgxMU02IDFoMTVNNSAyaDE3TTQgM2gxOU0zIDRoMjFNMyA1aDJNMTAgNWg3TTIyIDVoMk0yIDZoNE0xMCA2aDdNMjEgNmg0TTIgN2g1TTExIDdoNU0yMCA3aDVNMSA4aDdNMTIgOGgzTTE5IDhoN00xIDloOE0xMyA5aDFNMTggOWg4TTEgMTBoOU0xNyAxMGg5TTEgMTFoMTBNMTYgMTFoMTBNMSAxMmgxME0xNiAxMmgxME0xIDEzaDEwTTE2IDEzaDEwTTEgMTRoOU0xNyAxNGg5TTEgMTVoOE0xMyAxNWgxTTE4IDE1aDhNMiAxNmg2TTEyIDE2aDNNMTkgMTZoNk0yIDE3aDVNMTEgMTdoNU0yMCAxN2g1TTMgMThoM00xMCAxOGg3TTIxIDE4aDNNMyAxOWgyTTEwIDE5aDdNMjIgMTloMk00IDIwaDE5TTUgMjFoMTdNNiAyMmgxNU04IDIzaDExTTEwIDI0aDciIC8+CjxwYXRoIHN0cm9rZT0iIzJhMWY0MiIgZD0iTTUgNWg1TTE3IDVoNU02IDZoNE0xNyA2aDRNMSA3aDFNNyA3aDRNMTYgN2g0TTI1IDdoMU04IDhoNE0xNSA4aDRNOSA5aDRNMTQgOWg0TTAgMTBoMU0xMCAxMGg3TTI2IDEwaDFNMCAxMWgxTTExIDExaDVNMjYgMTFoMU0wIDEyaDFNMTEgMTJoNU0yNiAxMmgxTTAgMTNoMU0xMSAxM2g1TTI2IDEzaDFNMCAxNGgxTTEwIDE0aDdNMjYgMTRoMU0wIDE1aDFNOSAxNWg0TTE0IDE1aDRNMjYgMTVoMU0wIDE2aDJNOCAxNmg0TTE1IDE2aDRNMjUgMTZoMk0wIDE3aDJNNyAxN2g0TTE2IDE3aDRNMjUgMTdoMk0wIDE4aDNNNiAxOGg0TTE3IDE4aDRNMjQgMThoM00xIDE5aDJNNSAxOWg1TTE3IDE5aDVNMjQgMTloMk0xIDIwaDNNMjMgMjBoM00xIDIxaDRNMjIgMjFoNE0yIDIyaDRNMjEgMjJoNE0zIDIzaDVNMTkgMjNoNU0zIDI0aDdNMTcgMjRoN000IDI1aDE5TTYgMjZoMTVNNyAyN2gxM00xMCAyOGg3IiAvPgo8L3N2Zz4=',
+        img_down: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTAuNSAyNyAyOSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj4KPG1ldGFkYXRhPk1hZGUgd2l0aCBQaXhlbHMgdG8gU3ZnIGh0dHBzOi8vY29kZXBlbi5pby9zaHNoYXcvcGVuL1hieHZOajwvbWV0YWRhdGE+CjxwYXRoIHN0cm9rZT0iIzQ3NDA2ZiIgZD0iTTggMmgxMU02IDNoMTVNNSA0aDE3TTQgNWgxOU0zIDZoMjFNMyA3aDJNMTAgN2g3TTIyIDdoMk0yIDhoNE0xMCA4aDdNMjEgOGg0TTIgOWg1TTExIDloNU0yMCA5aDVNMSAxMGg3TTEyIDEwaDNNMTkgMTBoN00xIDExaDhNMTMgMTFoMU0xOCAxMWg4TTEgMTJoOU0xNyAxMmg5TTEgMTNoMTBNMTYgMTNoMTBNMSAxNGgxME0xNiAxNGgxME0xIDE1aDEwTTE2IDE1aDEwTTEgMTZoOU0xNyAxNmg5TTEgMTdoOE0xMyAxN2gxTTE4IDE3aDhNMiAxOGg2TTEyIDE4aDNNMTkgMThoNk0yIDE5aDVNMTEgMTloNU0yMCAxOWg1TTMgMjBoM00xMCAyMGg3TTIxIDIwaDNNMyAyMWgyTTEwIDIxaDdNMjIgMjFoMk00IDIyaDE5TTUgMjNoMTdNNiAyNGgxNU04IDI1aDExTTEwIDI2aDciIC8+CjxwYXRoIHN0cm9rZT0iI2NjNzIzZiIgZD0iTTUgN2g1TTE3IDdoNU02IDhoNE0xNyA4aDRNNyA5aDRNMTYgOWg0TTggMTBoNE0xNSAxMGg0TTkgMTFoNE0xNCAxMWg0TTEwIDEyaDdNMTEgMTNoNU0xMSAxNGg1TTExIDE1aDVNMTAgMTZoN005IDE3aDRNMTQgMTdoNE04IDE4aDRNMTUgMThoNE03IDE5aDRNMTYgMTloNE02IDIwaDRNMTcgMjBoNE01IDIxaDVNMTcgMjFoNSIgLz4KPHBhdGggc3Ryb2tlPSIjMmExZjQyIiBkPSJNMSA5aDFNMjUgOWgxTTAgMTJoMU0yNiAxMmgxTTAgMTNoMU0yNiAxM2gxTTAgMTRoMU0yNiAxNGgxTTAgMTVoMU0yNiAxNWgxTTAgMTZoMU0yNiAxNmgxTTAgMTdoMU0yNiAxN2gxTTAgMThoMk0yNSAxOGgyTTEgMTloMU0yNSAxOWgxTTEgMjBoMk0yNCAyMGgyTTEgMjFoMk0yNCAyMWgyTTIgMjJoMk0yMyAyMmgyTTMgMjNoMk0yMiAyM2gyTTMgMjRoM00yMSAyNGgzTTQgMjVoNE0xOSAyNWg0TTYgMjZoNE0xNyAyNmg0TTcgMjdoMTNNMTAgMjhoNyIgLz4KPC9zdmc+'
+    }, {
+        id: 'button-c',
+        key: 'c',
+        keyCode: 67,
+        img_up: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTAuNSAyNyAyOSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj4KPG1ldGFkYXRhPk1hZGUgd2l0aCBQaXhlbHMgdG8gU3ZnIGh0dHBzOi8vY29kZXBlbi5pby9zaHNoYXcvcGVuL1hieHZOajwvbWV0YWRhdGE+CjxwYXRoIHN0cm9rZT0iIzQ3NDA2ZiIgZD0iTTggMGgxMU02IDFoMTVNNSAyaDE3TTQgM2gxOU0zIDRoOE0xNiA0aDhNMyA1aDZNMTggNWg2TTIgNmg1TTIwIDZoNU0yIDdoNU0xMSA3aDVNMjAgN2g1TTEgOGg1TTEwIDhoN00yMCA4aDZNMSA5aDVNOSA5aDlNMjAgOWg2TTEgMTBoNE04IDEwaDE4TTEgMTFoNE04IDExaDE4TTEgMTJoNE04IDEyaDE4TTEgMTNoNE04IDEzaDE4TTEgMTRoNE04IDE0aDE4TTEgMTVoNU05IDE1aDlNMjAgMTVoNk0yIDE2aDRNMTAgMTZoN00yMCAxNmg1TTIgMTdoNU0xMSAxN2g1TTIwIDE3aDVNMyAxOGg0TTIwIDE4aDRNMyAxOWg2TTE4IDE5aDZNNCAyMGg3TTE2IDIwaDdNNSAyMWgxN002IDIyaDE1TTggMjNoMTFNMTAgMjRoNyIgLz4KPHBhdGggc3Ryb2tlPSIjMmExZjQyIiBkPSJNMTEgNGg1TTkgNWg5TTcgNmgxM00xIDdoMU03IDdoNE0xNiA3aDRNMjUgN2gxTTYgOGg0TTE3IDhoM002IDloM00xOCA5aDJNMCAxMGgxTTUgMTBoM00yNiAxMGgxTTAgMTFoMU01IDExaDNNMjYgMTFoMU0wIDEyaDFNNSAxMmgzTTI2IDEyaDFNMCAxM2gxTTUgMTNoM00yNiAxM2gxTTAgMTRoMU01IDE0aDNNMjYgMTRoMU0wIDE1aDFNNiAxNWgzTTE4IDE1aDJNMjYgMTVoMU0wIDE2aDJNNiAxNmg0TTE3IDE2aDNNMjUgMTZoMk0wIDE3aDJNNyAxN2g0TTE2IDE3aDRNMjUgMTdoMk0wIDE4aDNNNyAxOGgxM00yNCAxOGgzTTEgMTloMk05IDE5aDlNMjQgMTloMk0xIDIwaDNNMTEgMjBoNU0yMyAyMGgzTTEgMjFoNE0yMiAyMWg0TTIgMjJoNE0yMSAyMmg0TTMgMjNoNU0xOSAyM2g1TTMgMjRoN00xNyAyNGg3TTQgMjVoMTlNNiAyNmgxNU03IDI3aDEzTTEwIDI4aDciIC8+Cjwvc3ZnPg==',
+        img_down: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgLTAuNSAyNyAyOSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj4KPG1ldGFkYXRhPk1hZGUgd2l0aCBQaXhlbHMgdG8gU3ZnIGh0dHBzOi8vY29kZXBlbi5pby9zaHNoYXcvcGVuL1hieHZOajwvbWV0YWRhdGE+CjxwYXRoIHN0cm9rZT0iIzQ3NDA2ZiIgZD0iTTggMmgxMU02IDNoMTVNNSA0aDE3TTQgNWgxOU0zIDZoOE0xNiA2aDhNMyA3aDZNMTggN2g2TTIgOGg1TTIwIDhoNU0yIDloNU0xMSA5aDVNMjAgOWg1TTEgMTBoNU0xMCAxMGg3TTIwIDEwaDZNMSAxMWg1TTkgMTFoOU0yMCAxMWg2TTEgMTJoNE04IDEyaDE4TTEgMTNoNE04IDEzaDE4TTEgMTRoNE04IDE0aDE4TTEgMTVoNE04IDE1aDE4TTEgMTZoNE04IDE2aDE4TTEgMTdoNU05IDE3aDlNMjAgMTdoNk0yIDE4aDRNMTAgMThoN00yMCAxOGg1TTIgMTloNU0xMSAxOWg1TTIwIDE5aDVNMyAyMGg0TTIwIDIwaDRNMyAyMWg2TTE4IDIxaDZNNCAyMmg3TTE2IDIyaDdNNSAyM2gxN002IDI0aDE1TTggMjVoMTFNMTAgMjZoNyIgLz4KPHBhdGggc3Ryb2tlPSIjY2M3MjNmIiBkPSJNMTEgNmg1TTkgN2g5TTcgOGgxM003IDloNE0xNiA5aDRNNiAxMGg0TTE3IDEwaDNNNiAxMWgzTTE4IDExaDJNNSAxMmgzTTUgMTNoM001IDE0aDNNNSAxNWgzTTUgMTZoM002IDE3aDNNMTggMTdoMk02IDE4aDRNMTcgMThoM003IDE5aDRNMTYgMTloNE03IDIwaDEzTTkgMjFoOU0xMSAyMmg1IiAvPgo8cGF0aCBzdHJva2U9IiMyYTFmNDIiIGQ9Ik0xIDloMU0yNSA5aDFNMCAxMmgxTTI2IDEyaDFNMCAxM2gxTTI2IDEzaDFNMCAxNGgxTTI2IDE0aDFNMCAxNWgxTTI2IDE1aDFNMCAxNmgxTTI2IDE2aDFNMCAxN2gxTTI2IDE3aDFNMCAxOGgyTTI1IDE4aDJNMSAxOWgxTTI1IDE5aDFNMSAyMGgyTTI0IDIwaDJNMSAyMWgyTTI0IDIxaDJNMiAyMmgyTTIzIDIyaDJNMyAyM2gyTTIyIDIzaDJNMyAyNGgzTTIxIDI0aDNNNCAyNWg0TTE5IDI1aDRNNiAyNmg0TTE3IDI2aDRNNyAyN2gxM00xMCAyOGg3IiAvPgo8L3N2Zz4='
+    }, ];
+    buttons.forEach(buttonInfo => {
+        const buttonElement = document.getElementById(buttonInfo.id);
+        if (buttonElement) {
+            buttonElement.src = buttonInfo.img_up;
+            buttonElement.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                buttonElement.classList.add('pressed');
+                buttonElement.src = buttonInfo.img_down;
+                simulateKeyEvent('keydown', buttonInfo.key, buttonInfo.keyCode);
+            }, {
+                passive: false
+            });
+            buttonElement.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                buttonElement.classList.remove('pressed');
+                buttonElement.src = buttonInfo.img_up;
+                simulateKeyEvent('keyup', buttonInfo.key, buttonInfo.keyCode);
+            }, {
+                passive: false
+            });
+        }
+    });
+});
+</script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
+        <script>
+            function toggleFullscreen() {
+                const doc = document;
+                const docEl = doc.documentElement;
+                
+                const isInFullscreen = () =>
+                doc.fullscreenElement ||
+                doc.webkitFullscreenElement ||
+                doc.mozFullScreenElement ||
+                doc.msFullscreenElement;
+                
+                const requestFullscreen = () => {
+                    if (docEl.requestFullscreen) docEl.requestFullscreen();
+                    else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+                    else if (docEl.mozRequestFullScreen) docEl.mozRequestFullScreen();
+                    else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
+                };
+                
+                const exitFullscreen = () => {
+                    if (doc.exitFullscreen) doc.exitFullscreen();
+                    else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
+                    else if (doc.mozCancelFullScreen) doc.mozCancelFullScreen();
+                    else if (doc.msExitFullscreen) doc.msExitFullscreen();
+                };
+                
+                if (!isInFullscreen()) {
+                    requestFullscreen();
+                } else {
+                    exitFullscreen();
+                }
+            }
+            const originalConsoleLog = console.log;
+            console.log = function(...args) {
+                originalConsoleLog.apply(console, args);
+                if (args.some(arg => typeof arg === 'string' && arg.includes('Toggling fullscreen...'))) {
+                    toggleFullscreen();
+                }
+            };
+            document.addEventListener('DOMContentLoaded', () => {
+                const fullscreenButton = document.getElementById('fullscreen');
+                if (fullscreenButton) {
+                    fullscreenButton.addEventListener('click', toggleFullscreen);
+                }
+            });
+        </script>
+        <script>
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const loadingLog = document.getElementById('loading-log');
+            const originalLog = console.log;
+            
+            console.log = function(message) {
+                originalLog.apply(console, arguments);
+                
+                if (typeof message === 'string') {
+                    if (message.startsWith('loaded')) {
+                        loadingLog.textContent = message;
+                    }
+                    
+                    if (message.startsWith('Success Loaded game file')) {
+                        loadingOverlay.style.display = 'none';
+                    }
+                }
+            };
+        </script>
+</body>
+
+</html>
